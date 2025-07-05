@@ -59,14 +59,25 @@ export const signUp = async({username, password, email}: authValidation.SignupIn
         data: {
             username,
             password: hashedPassword,
-            email
+            email,
         }
     });
+
+    const payload = {
+        data: {
+            id: newUser.id,
+            username: newUser.username
+        },
+        expiresIn: "1d"
+    }
+
+    const token = jwtUtil.generateToken(payload)
 
     return {   
         user: {
             id: newUser.id,
             username: newUser.username,
+            token
         }
     }
 }
