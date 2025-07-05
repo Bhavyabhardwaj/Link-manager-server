@@ -6,3 +6,4 @@ const router = Router();
 const apiRoutes = [
     { path: "/auth", router: authRouter },
 ]
+

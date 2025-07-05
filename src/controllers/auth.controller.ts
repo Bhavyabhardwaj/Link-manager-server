@@ -18,3 +18,27 @@ export const handleSignIn = async(req: Request, res: Response, next: NextFunctio
         next(error);
     }
 }
+
+export const handleSignUp = async(req: Request, res: Response, next: NextFunction) => {
+    const {username, password, email}: authValidation.SignupInput = req.body;
+
+    try {
+        const user = await authService.signUp({username, password, email});
+        res.status(201).json({
+            status: "success",
+            message: "Sign up successful",
+            user,
+        });
+    } catch (error) {
+        next(error);
+        
+    }
+}
+
+
+export const verifyToken = async (req: Request, res: Response) => {
+    res.status(200).json({
+        success : true,
+        message : "Verified user"
+    });
+}

@@ -39,3 +39,34 @@ export const signIn = async({username, password}: authValidation.SigninInput)=> 
         token
     };
 }
+
+export const signUp = async({username, password, email}: authValidation.SignupInput) => {
+    
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+        where:{
+            username
+        }
+    })
+
+    if (existingUser) {
+        throw new BadRequestError("User already exists");
+    }
+    
+    const hashedPassword = await bcryptUtil.generateHashPassword(password);
+
+    const newUser = await prisma.user.create({
+        data: {
+            username,
+            password: hashedPassword,
+            email
+        }
+    });
+
+    return {   
+        user: {
+            id: newUser.id,
+            username: newUser.username,
+        }
+    }
+}
