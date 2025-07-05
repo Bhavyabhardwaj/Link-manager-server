@@ -1,7 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtConfig';
 
-export const generateToken = ({data, expiresIn = '1h'}: {data: object, expiresIn?: string}) => {
+export const generateToken = ({data, expiresIn}: {data: object, expiresIn?: string}) => {
     return jwt.sign(data, JWT_SECRET, { expiresIn } as SignOptions);
 }
 

@@ -9,5 +9,5 @@ export const signup = signin.extend({
     email: z.string().email(),
 })
 
-export type SigninType = z.infer<typeof signin>;
-export type SignupType = z.infer<typeof signup>;
+export type SigninInput = z.infer<typeof signin>;
+export type SignupInput = z.infer<typeof signup>;
