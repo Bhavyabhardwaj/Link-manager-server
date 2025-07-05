@@ -1,12 +1,11 @@
-import express from express;
 import { Router } from "express";
+import { authController } from "../controllers";
 
 const authRouter = Router();
 
-authRouter.get("/login", 
-});
+authRouter.post("/signin", authController.handleSignIn);
 
-authRouter.post("/login", 
+authRouter.post("/signup", 
 });
 
 export default authRouter;
