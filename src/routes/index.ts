@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authRouter from "./auth.router";
-import linkRouter from "./link.router"; // (when created)
+import linkRouter from "./link.router"; 
 import { isAuthenticated } from "../middlewares"; // for protected routes
 
 const router = Router();
