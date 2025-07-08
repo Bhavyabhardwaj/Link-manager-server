@@ -10,8 +10,8 @@ export const isAuthenticated = (req: Request, res: Response, next: NextFunction)
     }
 
     try {
-        const decoded = jwtUtil.verifyToken(token);
-        (req as any).user = decoded;
+        const { data } = jwtUtil.verifyToken(token);
+        (req as any).user = data; 
         next();
     } catch (error) {
         next(error);
