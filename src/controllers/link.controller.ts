@@ -9,7 +9,7 @@ export const createLink = async (
 ) => {
   try {
     const { title, url, description } = req.body;
-    const userId = (req as any).user.id;
+    const userId = (req as any).user.decoded.id;
     const newLink = await linkService.createLink(
       { title, url, description, active: true },
       userId

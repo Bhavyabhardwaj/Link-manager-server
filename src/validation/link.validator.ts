@@ -5,7 +5,6 @@ export const linkValidator = z.object({
   title: z.string().min(1, 'Title is required'),
   active: z.boolean().optional().default(true),
   description: z.string().optional(),
-  createdAt: z.date().optional(),
 });
 
 export type LinkInput = z.infer<typeof linkValidator>;
