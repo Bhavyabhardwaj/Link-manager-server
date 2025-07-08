@@ -13,7 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 
-app.use(/, router)
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
