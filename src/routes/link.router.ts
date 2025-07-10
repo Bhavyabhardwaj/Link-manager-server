@@ -9,6 +9,8 @@ const linkRouter = Router();
  *   post:
  *     summary: Create a new link
  *     tags: [Link]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
