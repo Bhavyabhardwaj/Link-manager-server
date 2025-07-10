@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 // import { errorHandler } from "./middlewares";
 import cors from "cors";
 import router from "./routes";
+import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
         message : "Server is up and running."
     });
 });
+app.use('/api-docs', swaggerDocs, swaggerDocsSetup);
 
 // app.use(errorHandler);
 
