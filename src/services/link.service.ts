@@ -1,7 +1,7 @@
 import { linkValidation } from "../validation";
 import prisma from "../config/db";
 
-export const createLink = async({title, url, description}: linkValidation.LinkInput, userId: string) => {
+export const createLink = async ({ title, url, description }: linkValidation.LinkInput, userId: string) => {
     const newLink = await prisma.link.create({
         data: {
             title,
@@ -13,7 +13,7 @@ export const createLink = async({title, url, description}: linkValidation.LinkIn
     return newLink;
 }
 
-export const getLinks = async(userId: string) => {
+export const getLinks = async (userId: string) => {
     const links = await prisma.link.findMany({
         where: {
             userId,
@@ -26,7 +26,7 @@ export const getLinks = async(userId: string) => {
     return links;
 }
 
-export const getLinkById = async(linkId: string, userId: string) => {
+export const getLinkById = async (linkId: string, userId: string) => {
     const link = await prisma.link.findUnique({
         where: {
             id: linkId,
@@ -36,7 +36,7 @@ export const getLinkById = async(linkId: string, userId: string) => {
     });
     return link;
 }
-export const updateLink = async(linkId: string, userId: string, updateData: Partial<linkValidation.LinkInput>) => {
+export const updateLink = async (linkId: string, userId: string, updateData: Partial<linkValidation.LinkInput>) => {
     const updatedLink = await prisma.link.update({
         where: {
             id: linkId,
@@ -48,7 +48,7 @@ export const updateLink = async(linkId: string, userId: string, updateData: Part
     return updatedLink;
 }
 
-export const deleteLink = async(linkId: string, userId: string) => {
+export const deleteLink = async (linkId: string, userId: string) => {
     const deletedLink = await prisma.link.update({
         where: {
             id: linkId,
@@ -60,4 +60,32 @@ export const deleteLink = async(linkId: string, userId: string) => {
         }
     });
     return deletedLink;
+}
+
+export const reorderLinks = async (userId: string, linkIds: string[]) => {
+    const links = await prisma.link.findMany({
+        where: {
+            userId,
+            id: {
+                in: linkIds
+            },
+            active: true
+        },
+        orderBy: {
+            order: 'asc'
+        }
+    });
+
+    const updatedLinks = await Promise.all(links.map((link, index) => {
+        return prisma.link.update({
+            where: {
+                id: link.id
+            },
+            data: {
+                order: index
+            }
+        });
+    }));
+
+    return updatedLinks;
 }

@@ -96,3 +96,18 @@ export const deleteLink = async(req: Request, res: Response, next: NextFunction)
         next(error);
     }
 }
+
+export const reorderLinks = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = (req as any).user.id;
+        const { linkIds } = req.body;
+        const reorderedLinks = await linkService.reorderLinks(userId, linkIds);
+        res.status(200).json({
+            status: "success",
+            message: "Links reordered successfully",
+            data: reorderedLinks,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+}

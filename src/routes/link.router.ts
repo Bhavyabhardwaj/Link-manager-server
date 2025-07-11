@@ -106,5 +106,6 @@ linkRouter.get('/get-link/:id', linkController.getLinkById);
  */
 linkRouter.put('/update-link/:id', linkController.updateLink);
 linkRouter.delete('/delete-link/:id', linkController.deleteLink);
+linkRouter.patch('/reorder-links', linkController.reorderLinks);
 
 export default linkRouter;
