@@ -81,3 +81,13 @@ export const signUp = async({username, password, email}: authValidation.SignupIn
         }
     }
 }
+
+export const updateUsername = async (userId: string, newUsername: string) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      username: newUsername,
+      usernameChanged: true,
+    },
+  });
+};

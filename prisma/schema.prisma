@@ -21,6 +21,7 @@ model User {
   username String   @unique
   bio      String?
   image    String?
+  githubId String? @unique  @map("github_id")
   links    Link[]
   name      String?
   createdAt DateTime @default(now())
