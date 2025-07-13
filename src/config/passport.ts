@@ -1,5 +1,5 @@
-import { Strategy as githubStrategy } from 'passport-github2';
 import passport from 'passport';
+import { Strategy as githubStrategy } from 'passport-github2';
 import prisma from './db';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -17,11 +17,13 @@ passport.use(
                     where: { githubId: profile.id },
                 });
                 if (!user) {
+                    // Fallback email if not provided by GitHub
+                    const email = profile.emails?.[0]?.value || `${profile.username || 'githubuser'}@noemail.github`;
                     user = await prisma.user.create({
                         data: {
                             githubId: profile.id,
                             name: profile.displayName,
-                            email: profile.emails?.[0].value,
+                            email: email,
                             username: profile.username,
                             password: '',
                         },
@@ -29,8 +31,7 @@ passport.use(
                 }
                 
                 return done(null, user);
-            } catch (error) {
-                console.error('Error in GitHub strategy:', error);
+            } catch (error: any) {
                 return done(error, null);
             }
         }
