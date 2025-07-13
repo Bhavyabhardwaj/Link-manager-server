@@ -20,6 +20,7 @@ githubAuthRouter.get('/github/callback',
 
         res.json({ token, user });
     }
+
 );
 
 export default githubAuthRouter;
