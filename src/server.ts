@@ -10,6 +10,7 @@ import cookieSession from "cookie-session";
 const app = express();
 dotenv.config();
 import './config/passportGithub';
+import './config/passportGoogle';
 
 app.use(cors());
 app.use(express.json());
@@ -18,6 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 3000;
 app.use(cookieSession({
   name: 'github-auth-session',
+  keys: ['key1', 'key2']
+}))
+app.use(cookieSession({
+  name: 'google-auth-session',
   keys: ['key1', 'key2']
 }))
 app.use(passport.initialize());
