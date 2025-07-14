@@ -30,7 +30,7 @@ const authRouter = Router();
  *       200:
  *         description: User signed in successfully
  */
-authRouter.post("/signin", authController.handleSignIn, rateLimiters.loginLimiter);
+authRouter.post("/signin", , rateLimiters.loginLimiter, authController.handleSignIn);
 
 /**
  * @swagger
@@ -62,6 +62,6 @@ authRouter.post("/signin", authController.handleSignIn, rateLimiters.loginLimite
  *       201:
  *         description: User created successfully
  */
-authRouter.post("/signup", authController.handleSignUp, rateLimiters.signupLimiter);
+authRouter.post("/signup",  rateLimiters.signupLimiter, authController.handleSignUp);
 
 export default authRouter;
