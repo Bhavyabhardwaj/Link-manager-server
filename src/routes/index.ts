@@ -4,6 +4,7 @@ import linkRouter from "./link.router";
 import { isAuthenticated } from "../middlewares"; // for protected routes
 import publicRouter from "./public.router";
 import githubAuthRouter from "./githubAuth.router";
+import googleAuthRouter from "./googleAuth.router";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ const apiRoutes = [
   { path: "/auth", route: authRouter },
   { path: "/link", route: linkRouter, isProtected: true },
   { path: "/oauth", route: githubAuthRouter},
+  { path: "/oauth", route: googleAuthRouter},
 ];
 
 // Loop through routes and apply them
