@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authController } from "../controllers";
+import { rateLimiters } from "../middlewares";
 
 const authRouter = Router();
 
@@ -29,7 +30,7 @@ const authRouter = Router();
  *       200:
  *         description: User signed in successfully
  */
-authRouter.post("/signin", authController.handleSignIn);
+authRouter.post("/signin", authController.handleSignIn, rateLimiters.loginLimiter);
 
 /**
  * @swagger
@@ -61,6 +62,6 @@ authRouter.post("/signin", authController.handleSignIn);
  *       201:
  *         description: User created successfully
  */
-authRouter.post("/signup", authController.handleSignUp);
+authRouter.post("/signup", authController.handleSignUp, rateLimiters.signupLimiter);
 
 export default authRouter;
