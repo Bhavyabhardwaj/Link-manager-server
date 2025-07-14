@@ -2,7 +2,21 @@ import passport from 'passport';
 import { Strategy as githubStrategy } from 'passport-github2';
 import prisma from './db';
 import dotenv from 'dotenv';
+import fetch from 'node-fetch';
 dotenv.config();
+
+async function getGithubPrimaryEmail(accessToken: string): Promise<string | null> {
+    const res = await fetch('https://api.github.com/user/emails', {
+        headers: {
+            'Authorization': `token ${accessToken}`,
+            'User-Agent': 'LinkManagerApp'
+        }
+    });
+    const emails = await res.json();
+    if (!Array.isArray(emails)) return null;
+    const primary = emails.find((e: any) => e.primary && e.verified);
+    return primary ? primary.email : (emails[0] ? emails[0].email : null);
+}
 
 passport.use(
     new githubStrategy(
@@ -16,20 +30,22 @@ passport.use(
                 let user = await prisma.user.findUnique({
                     where: { githubId: profile.id },
                 });
+                let email = profile.emails?.[0]?.value;
+                if (!email) {
+                    email = await getGithubPrimaryEmail(accessToken);
+                }
                 if (!user) {
-                    // Fallback email if not provided by GitHub
-                    const email = profile.emails?.[0]?.value || `${profile.username || 'githubuser'}@noemail.github`;
+                    const finalEmail = email || `${profile.username || 'githubuser'}@noemail.github`;
                     user = await prisma.user.create({
                         data: {
                             githubId: profile.id,
                             name: profile.displayName,
-                            email: email,
+                            email: finalEmail,
                             username: profile.username,
                             password: '',
                         },
                     });
                 }
-                
                 return done(null, user);
             } catch (error: any) {
                 return done(error, null);
