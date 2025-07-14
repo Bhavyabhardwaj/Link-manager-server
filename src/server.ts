@@ -9,7 +9,7 @@ import cookieSession from "cookie-session";
 
 const app = express();
 dotenv.config();
-import './config/passport';
+import './config/passportGithub';
 
 app.use(cors());
 app.use(express.json());
