@@ -54,6 +54,11 @@ model linkClick {
   userAgent String?
   referrer  String?
   country   String?
+  city      String?
+  agent     String?
+  device    String?
+  os        String?
+  browser   String?
   
   link      Link     @relation(fields: [linkId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])
