@@ -2,6 +2,9 @@ import { NotFoundError } from "../errors";
 import { linkService } from "../services";
 import { Response, Request, NextFunction } from "express";
 
+// Controller functions for handling link-related API requests
+
+// Handles creation of a new link for the authenticated user
 export const createLink = async (
   req: Request,
   res: Response,
@@ -25,6 +28,7 @@ export const createLink = async (
   }
 };
 
+// Handles fetching all links for the authenticated user
 export const getLinks = async (
   req: Request,
   res: Response,
@@ -43,6 +47,7 @@ export const getLinks = async (
   }
 };
 
+// Handles fetching a single link by its ID for the authenticated user
 export const getLinkById = async (
   req: Request,
   res: Response,
@@ -66,6 +71,7 @@ export const getLinkById = async (
   }
 };
 
+// Handles updating a link by its ID for the authenticated user
 export const updateLink = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const linkId = req.params.id;
@@ -82,6 +88,7 @@ export const updateLink = async(req: Request, res: Response, next: NextFunction)
     }
 }
 
+// Handles soft-deleting a link by its ID for the authenticated user
 export const deleteLink = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const linkId = req.params.id;
@@ -97,6 +104,7 @@ export const deleteLink = async(req: Request, res: Response, next: NextFunction)
     }
 }
 
+// Handles reordering of links for the authenticated user
 export const reorderLinks = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = (req as any).user.id;

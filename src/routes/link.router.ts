@@ -36,6 +36,7 @@ const linkRouter = Router();
  *         description: Link created successfully
  */
 
+// Route to create a new link
 linkRouter.post('/create-link', linkController.createLink);
 
 /**
@@ -63,7 +64,9 @@ linkRouter.post('/create-link', linkController.createLink);
  *                 data:
  *                   type: array
  */
+// Route to get all links for the authenticated user
 linkRouter.get('/get-links', linkController.getLinks);
+// Route to get a single link by its ID
 linkRouter.get('/get-link/:id', linkController.getLinkById);
 /**
  * @swagger
@@ -104,8 +107,56 @@ linkRouter.get('/get-link/:id', linkController.getLinkById);
  *       200:
  *         description: Link updated successfully
  */
+// Route to update a link by its ID
 linkRouter.put('/update-link/:id', linkController.updateLink);
+/**
+ * @swagger
+ * /api/link/delete-link/{id}:
+ *   delete:
+ *     summary: Delete a link
+ *     tags: [Link]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the link to delete
+ *     responses:
+ *       200:
+ *         description: Link deleted successfully
+ */
+// Route to delete a link by its ID
 linkRouter.delete('/delete-link/:id', linkController.deleteLink);
+/**
+ * @swagger
+ * /api/link/reorder-links:
+ *   patch:
+ *     summary: Reorder links
+ *     tags: [Link]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - linkIds
+ *             properties:
+ *               linkIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["linkId1", "linkId2", "linkId3"]
+ *     responses:
+ *       200:
+ *         description: Links reordered successfully
+ */
+// Route to reorder links for the authenticated user
 linkRouter.patch('/reorder-links', linkController.reorderLinks);
 
 export default linkRouter;

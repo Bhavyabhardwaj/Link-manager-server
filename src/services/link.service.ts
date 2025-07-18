@@ -1,6 +1,8 @@
 import { linkValidation } from "../validation";
 import prisma from "../config/db";
 
+// Service functions for link business logic and database operations
+// Creates a new link for a user
 export const createLink = async ({ title, url, description }: linkValidation.LinkInput, userId: string) => {
     const newLink = await prisma.link.create({
         data: {
@@ -13,6 +15,7 @@ export const createLink = async ({ title, url, description }: linkValidation.Lin
     return newLink;
 }
 
+// Fetches all active links for a user, ordered by creation date
 export const getLinks = async (userId: string) => {
     const links = await prisma.link.findMany({
         where: {
@@ -26,6 +29,7 @@ export const getLinks = async (userId: string) => {
     return links;
 }
 
+// Fetches a single active link by its ID and user ID
 export const getLinkById = async (linkId: string, userId: string) => {
     const link = await prisma.link.findUnique({
         where: {
@@ -36,6 +40,7 @@ export const getLinkById = async (linkId: string, userId: string) => {
     });
     return link;
 }
+// Updates an active link by its ID and user ID
 export const updateLink = async (linkId: string, userId: string, updateData: Partial<linkValidation.LinkInput>) => {
     const updatedLink = await prisma.link.update({
         where: {
@@ -48,6 +53,7 @@ export const updateLink = async (linkId: string, userId: string, updateData: Par
     return updatedLink;
 }
 
+// Soft-deletes a link by setting its active flag to false
 export const deleteLink = async (linkId: string, userId: string) => {
     const deletedLink = await prisma.link.update({
         where: {
@@ -62,6 +68,7 @@ export const deleteLink = async (linkId: string, userId: string) => {
     return deletedLink;
 }
 
+// Reorders links for a user based on the provided order of link IDs
 export const reorderLinks = async (userId: string, linkIds: string[]) => {
     const links = await prisma.link.findMany({
         where: {
