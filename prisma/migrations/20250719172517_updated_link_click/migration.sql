@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "linkClick" ADD COLUMN     "clickDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_DATE;
