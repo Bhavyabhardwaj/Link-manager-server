@@ -6,7 +6,7 @@ export async function getIpInfo(ipAddress:string): Promise<IpInfo> {
         const { data } = await axios.get(
             `https://ipinfo.io/${ipAddress}/json?token=${IP_INFO_TOKEN}`,
             { timeout: 3000 }
-        );
+        ) as { data: IpInfo };
         return {
             ip: data.ip ?? '',
             country: data.country ?? '',

@@ -59,6 +59,7 @@ model linkClick {
   device    String?
   os        String?
   browser   String?
+  clickDate DateTime @default(dbgenerated("CURRENT_DATE")) 
   
   link      Link     @relation(fields: [linkId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])
