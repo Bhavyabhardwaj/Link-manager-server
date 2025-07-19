@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { linkController } from "../controllers";
+import { analyticsController, linkController } from "../controllers";
 
 const linkRouter = Router();
 
@@ -158,5 +158,7 @@ linkRouter.delete('/delete-link/:id', linkController.deleteLink);
  */
 // Route to reorder links for the authenticated user
 linkRouter.patch('/reorder-links', linkController.reorderLinks);
+
+linkRouter.get('/:id/analytics', analyticsController.getLinkAnalytics);
 
 export default linkRouter;

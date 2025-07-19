@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { IpInfo } from '../types';
+import { IP_INFO_TOKEN } from '../config/ipInfoConfig';
 
 export async function getIpInfo(ipAddress:string): Promise<IpInfo> {
     try {
