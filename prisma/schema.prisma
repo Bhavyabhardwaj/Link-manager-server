@@ -50,6 +50,7 @@ model linkClick {
   id        String   @id @default(cuid())
   linkId    String
   userId    String?
+  slug      String   @unique
   ipAddress String?
   userAgent String?
   referrer  String?
@@ -66,5 +67,5 @@ model linkClick {
   createdAt DateTime @default(now())
   @@index([linkId])
   @@index([userId])
-  @@unique([linkId, userId])
+  @@index([clickDate])
 }
