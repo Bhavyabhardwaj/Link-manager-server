@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { publicController } from "../controllers";
+import { analyticsController, publicController } from "../controllers";
 import { rateLimiters } from "../middlewares";
 
 const publicRouter = Router();
+
+// publicRouter.get("/r/:slug", analyticsController.trackClick);
+
 
 /**
  * @swagger
