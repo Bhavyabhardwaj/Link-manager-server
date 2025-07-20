@@ -1,6 +1,7 @@
 import { NotFoundError } from "../errors";
 import { linkService } from "../services";
 import { Response, Request, NextFunction } from "express";
+import { slugUtil } from "../utils";
 
 // Controller functions for handling link-related API requests
 
@@ -13,8 +14,9 @@ export const createLink = async (
   try {
     const { title, url, description } = req.body;
     const userId = (req as any).user.id;
+    const slug = await slugUtil.generateUniqueSlug();
     const newLink = await linkService.createLink(
-      { title, url, description, active: true },
+      { title, url, description, active: true, slug },
       userId
     );
 

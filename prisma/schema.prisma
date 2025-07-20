@@ -34,6 +34,7 @@ model Link {
   id        String   @id @default(cuid())
   url       String
   title     String
+  slug      String   @unique
   description String?
   active     Boolean  @default(true)
   order     Int      @default(0)
@@ -50,7 +51,6 @@ model linkClick {
   id        String   @id @default(cuid())
   linkId    String
   userId    String?
-  slug      String   @unique
   ipAddress String?
   userAgent String?
   referrer  String?
