@@ -12,9 +12,9 @@ export const createLink = async (
   next: NextFunction
 ) => {
   try {
-    const { title, url, description } = req.body;
+    const { title, url, description, slug } = req.body;
     const userId = (req as any).user.id;
-    const slug = await slugUtil.generateUniqueSlug();
+    
     const newLink = await linkService.createLink(
       { title, url, description, active: true, slug },
       userId

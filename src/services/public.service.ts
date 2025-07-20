@@ -30,3 +30,18 @@ export const getProfile = async (username: string) => {
 
     return user;
 }
+
+export const getLinkBySlug = async (slug: string) => {
+    const link = await prisma.link.findUnique({
+        where: {
+            slug,
+            active: true
+        }
+    });
+
+    if (!link) {
+        throw new NotFoundError(`Link with slug ${slug} not found`);
+    }
+
+    return link;
+}

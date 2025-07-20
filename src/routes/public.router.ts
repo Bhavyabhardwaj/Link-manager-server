@@ -4,7 +4,7 @@ import { rateLimiters } from "../middlewares";
 
 const publicRouter = Router();
 
-// publicRouter.get("/r/:slug", analyticsController.trackClick);
+publicRouter.get("/r/:slug", publicController.handleRedirect);
 
 
 /**
