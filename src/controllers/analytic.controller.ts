@@ -5,7 +5,7 @@ import prisma from "../config/db";
 
 export const trackClick = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { linkId } = req.params.slug;
+        const linkId  = req.params.slug;
         const userAgent = req.headers['user-agent'];
         const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0] || req.socket.remoteAddress || "";
         const [ipInfo, deviceInfo] = await Promise.all([ipUtil.getIpInfo(ip),
@@ -14,7 +14,6 @@ export const trackClick = async (req: Request, res: Response, next: NextFunction
 
         await linkClickService.logLinkClick({
             linkId,
-            userId: req.user?.id,
             ipAddress: ip,
             userAgent,
             referrer: req.headers.referer,
@@ -35,7 +34,7 @@ export const trackClick = async (req: Request, res: Response, next: NextFunction
 
 export const getLinkAnalytics = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { linkId } = req.params.slug;
+        const  linkId  = req.params.slug;
         const analytics = await linkClickService.getAnalytics(linkId);
         res.json({ status: "success", data: analytics });
     } catch (error) {
