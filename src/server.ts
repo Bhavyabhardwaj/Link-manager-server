@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-// import { errorHandler } from "./middlewares";
+import { errorHandler } from "./middlewares";
 import cors from "cors";
 import router from "./routes";
 import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 });
 app.use('/api-docs', swaggerDocs, swaggerDocsSetup);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
