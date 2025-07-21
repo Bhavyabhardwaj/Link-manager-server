@@ -1,18 +1,22 @@
 import nodemailer from 'nodemailer';
 
-// Email configuration
-const transporter = nodemailer.createTransport({
+// Production transporter
+const createTransporter = () => {
+  return nodemailer.createTransport({
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
-});
+  });
+};
 
 export const sendPasswordResetEmail = async (email: string, resetToken: string) => {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/reset-password?token=${resetToken}`;
+    
+    const transporter = createTransporter();
     
     const mailOptions = {
         from: process.env.EMAIL_FROM || 'noreply@linkmanager.com',
@@ -83,10 +87,10 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
     };
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`Password reset email sent to ${email}`);
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`📧 Password reset email sent to ${email}`);
     } catch (error) {
-        console.error('Error sending password reset email:', error);
+        console.error('❌ Error sending password reset email:', error);
         throw new Error('Failed to send password reset email');
     }
 };
