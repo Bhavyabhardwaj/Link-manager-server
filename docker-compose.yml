@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: linkmanager-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: linkManager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - linkmanager-network
+
+  # Link Manager API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkmanager-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/linkManager
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      BCRYPT_SALT_ROUND: 12
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_FROM: ${EMAIL_FROM}
+      FRONTEND_URL: http://localhost:3001
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GITHUB_CALLBACK_URL: http://localhost:3000/api/oauth/github/callback
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URL: http://localhost:3000/api/oauth/google/callback
+      IP_INFO_TOKEN: ${IP_INFO_TOKEN}
+      COOKIE_SECRET_1: ${COOKIE_SECRET_1}
+      COOKIE_SECRET_2: ${COOKIE_SECRET_2}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - linkmanager-network
+    volumes:
+      - ./logs:/app/logs
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npm start
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  linkmanager-network:
+    driver: bridge

@@ -7,7 +7,14 @@
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate && tsc"
+    "postinstall": "prisma generate && tsc",
+    "docker:build": "docker build -t linkmanager-api .",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "docker:down:dev": "docker-compose -f docker-compose.dev.yml down",
+    "docker:logs": "docker-compose logs -f api",
+    "docker:clean": "docker system prune -a"
   },
   "keywords": [],
   "author": "",

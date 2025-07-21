@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: linkmanager-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: linkManager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - linkmanager-dev-network
+
+  # Link Manager API - Development
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: linkmanager-api-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/linkManager
+      REDIS_URL: redis://redis:6379
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - linkmanager-dev-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    command: >
+      sh -c "
+        npx prisma migrate dev --name docker-init &&
+        npm run dev
+      "
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+
+networks:
+  linkmanager-dev-network:
+    driver: bridge
