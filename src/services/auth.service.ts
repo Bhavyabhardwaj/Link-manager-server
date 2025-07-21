@@ -1,7 +1,8 @@
 import prisma from "../config/db";
 import { BadRequestError, NotFoundError } from "../errors";
-import { bcryptUtil, jwtUtil } from "../utils";
+import { bcryptUtil, jwtUtil, emailUtil } from "../utils";
 import { authValidation } from "../validation";
+import crypto from "crypto";
 
 
 export const signIn = async({username, password}: authValidation.SigninInput)=> {
@@ -81,3 +82,80 @@ export const signUp = async({username, password, email}: authValidation.SignupIn
         }
     }
 }
+
+export const forgotPassword = async ({ email }: authValidation.ForgotPasswordInput) => {
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (!user) {
+        // For security, don't reveal if email exists
+        return {
+            message: "If an account with that email exists, we sent a password reset link."
+        };
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    // Save reset token to database
+    await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            resetPasswordToken: resetToken,
+            resetPasswordExpires
+        }
+    });
+
+    // Send password reset email
+    try {
+        await emailUtil.sendPasswordResetEmail(email, resetToken);
+    } catch (error) {
+        // Reset the token if email fails
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            }
+        });
+        throw new BadRequestError("Failed to send password reset email. Please try again.");
+    }
+
+    return {
+        message: "If an account with that email exists, we sent a password reset link."
+    };
+};
+
+export const resetPassword = async ({ token, newPassword }: authValidation.ResetPasswordInput) => {
+    const user = await prisma.user.findFirst({
+        where: {
+            resetPasswordToken: token,
+            resetPasswordExpires: {
+                gt: new Date() // Token must not be expired
+            }
+        }
+    });
+
+    if (!user) {
+        throw new BadRequestError("Invalid or expired reset token");
+    }
+
+    // Hash new password
+    const hashedPassword = await bcryptUtil.generateHashPassword(newPassword);
+
+    // Update password and clear reset token
+    await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            password: hashedPassword,
+            resetPasswordToken: null,
+            resetPasswordExpires: null
+        }
+    });
+
+    return {
+        message: "Password has been reset successfully. You can now sign in with your new password."
+    };
+};

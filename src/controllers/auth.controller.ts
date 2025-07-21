@@ -42,3 +42,31 @@ export const verifyToken = async (req: Request, res: Response) => {
         message : "Verified user"
     });
 }
+
+export const forgotPassword = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email }: authValidation.ForgotPasswordInput = req.body;
+        const result = await authService.forgotPassword({ email });
+        
+        res.status(200).json({
+            status: "success",
+            message: result.message,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const resetPassword = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { token, newPassword, confirmPassword }: authValidation.ResetPasswordInput = req.body;
+        const result = await authService.resetPassword({ token, newPassword, confirmPassword });
+        
+        res.status(200).json({
+            status: "success",
+            message: result.message,
+        });
+    } catch (error) {
+        next(error);
+    }
+}

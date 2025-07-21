@@ -23,6 +23,8 @@ model User {
   image    String?
   githubId String? @unique  @map("github_id")
   googleId String? @unique  @map("google_id")
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
   links    Link[]
   linkClicks linkClick[]
   name      String?
@@ -39,12 +41,17 @@ model Link {
   active     Boolean  @default(true)
   order     Int      @default(0)
   userId    String
+  expiresAt DateTime?
+  clickLimit Int?
+  clickCount Int      @default(0)
+  password  String?
   linkClicks linkClick[]
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([expiresAt])
 }
 
 model linkClick {

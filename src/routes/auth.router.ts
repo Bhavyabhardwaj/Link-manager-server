@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authController } from "../controllers";
-import { rateLimiters } from "../middlewares";
+import { rateLimiters, validateBody } from "../middlewares";
+import { authValidation } from "../validation";
 
 const authRouter = Router();
 
@@ -30,7 +31,7 @@ const authRouter = Router();
  *       200:
  *         description: User signed in successfully
  */
-authRouter.post("/signin", , rateLimiters.loginLimiter, authController.handleSignIn);
+authRouter.post("/signin", validateBody(authValidation.signin), rateLimiters.loginLimiter, authController.handleSignIn);
 
 /**
  * @swagger
@@ -62,6 +63,71 @@ authRouter.post("/signin", , rateLimiters.loginLimiter, authController.handleSig
  *       201:
  *         description: User created successfully
  */
-authRouter.post("/signup",  rateLimiters.signupLimiter, authController.handleSignUp);
+authRouter.post("/signup", validateBody(authValidation.signup), rateLimiters.signupLimiter, authController.handleSignUp);
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset email sent (if account exists)
+ *       400:
+ *         description: Invalid email format
+ */
+authRouter.post("/forgot-password", validateBody(authValidation.forgotPassword), rateLimiters.loginLimiter, authController.forgotPassword);
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset password using token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Password reset token from email
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 maxLength: 32
+ *                 example: newSecretPassword123
+ *               confirmPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 maxLength: 32
+ *                 example: newSecretPassword123
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired token, or passwords don't match
+ */
+authRouter.post("/reset-password", validateBody(authValidation.resetPassword), rateLimiters.loginLimiter, authController.resetPassword);
 
 export default authRouter;
