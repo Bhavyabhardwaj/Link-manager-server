@@ -9,6 +9,7 @@ import cookieSession from "cookie-session";
 
 const app = express();
 dotenv.config();
+
 import './config/passportGithub';
 import './config/passportGoogle';
 
@@ -17,22 +18,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
+
 app.use(cookieSession({
   name: 'github-auth-session',
   keys: ['key1', 'key2']
 }))
+
 app.use(cookieSession({
   name: 'google-auth-session',
   keys: ['key1', 'key2']
 }))
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/", router);
+
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Server is up and running."
   });
 });
+
 app.use('/api-docs', swaggerDocs, swaggerDocsSetup);
 
 app.use(errorHandler);
