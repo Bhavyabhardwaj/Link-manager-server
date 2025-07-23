@@ -6,12 +6,11 @@ import router from "./routes";
 import { swaggerDocs, swaggerDocsSetup } from "./docs/swagger";
 import passport from "passport";
 import cookieSession from "cookie-session";
+import './config/passportGithub';
+import './config/passportGoogle';
 
 const app = express();
 dotenv.config();
-
-import './config/passportGithub';
-import './config/passportGoogle';
 
 app.use(cors());
 app.use(express.json());
