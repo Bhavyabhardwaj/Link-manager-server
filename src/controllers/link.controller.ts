@@ -121,3 +121,18 @@ export const reorderLinks = async(req: Request, res: Response, next: NextFunctio
         next(error);
     }
 }
+
+export const generateQrCode = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+        const linkId = req.params.id;
+        const userId = (req as any).user.id;
+        const qrCodeUrl = await linkService.generateQrCode(linkId, userId);
+        res.status(200).json({
+            status: "success",
+            message: "QR code generated successfully",
+            data: { qrCodeUrl },
+        });
+    } catch (error: any) {
+        next(error);
+    }
+}

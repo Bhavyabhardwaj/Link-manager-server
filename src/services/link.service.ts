@@ -108,3 +108,28 @@ export const reorderLinks = async (userId: string, linkIds: string[]) => {
 
     return updatedLinks;
 }
+
+export const generateQrCode = async (linkId: string, userId: string) => {
+    const link = await prisma.link.findUnique({
+        where: {
+            id: linkId,
+            userId,
+            active: true
+        }
+    });
+
+    if (!link) {
+        throw new BadRequestError("Link not found");
+    }
+
+    // Generate QR code URL using a library like qrcode
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(link.url)}&size=200x200`;
+
+    // Update the link with the QR code URL
+    const updatedLink = await prisma.link.update({
+        where: { id: link.id },
+        data: { qrCodeUrl }
+    });
+
+    return updatedLink;
+}

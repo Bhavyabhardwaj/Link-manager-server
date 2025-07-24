@@ -159,6 +159,8 @@ linkRouter.delete('/delete-link/:id', linkController.deleteLink);
 // Route to reorder links for the authenticated user
 linkRouter.patch('/reorder-links', linkController.reorderLinks);
 
+linkRouter.get('/generate-qr-code/:id', linkController.generateQrCode);
+
 linkRouter.get('/:id/analytics', analyticsController.getLinkAnalytics);
 
 export default linkRouter;
