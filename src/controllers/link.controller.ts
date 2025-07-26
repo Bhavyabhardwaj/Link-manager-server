@@ -127,8 +127,9 @@ export const getQRCode = async (req: Request, res: Response, next: NextFunction)
     try {
         const { id } = req.params;
         const { format = 'png', size = 200 } = req.query;
-        
-        const link = await linkService.getLinkById(id);
+        const userId = (req as any).user.id;
+
+        const link = await linkService.getLinkById(id, userId);
         if (!link) return res.status(404).json({ error: 'Link not found' });
         
         const shortUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/${link.slug}`;

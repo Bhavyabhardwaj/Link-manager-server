@@ -140,7 +140,7 @@ export const generateQrCode = async (linkId: string, userId: string) => {
     // Update the link with the QR code URL
     const updatedLink = await prisma.link.update({
         where: { id: link.id },
-        data: { qrCodeUrl }
+        data: { qrCode: qrCodeUrl }
     });
 
     return updatedLink;
