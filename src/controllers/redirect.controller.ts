@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../config/db";
 import { deviceUtil, ipUtil } from "../utils";
-import { linkService } from "../services";
+import { linkClickService, linkService } from "../services";
 
 export const redirectToOriginalUrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -28,9 +28,9 @@ export const redirectToOriginalUrl = async (req: Request, res: Response, next: N
                     ipUtil.getIpInfo(ip),
                     Promise.resolve(deviceUtil.extractDeviceInfo(userAgent))
                 ]);
-                await linkService.logLinkClick({
+                await linkClickService.logLinkClick({
                     linkId: link.id,
-                    ip,
+                    ipAddress: ip,
                     userAgent,
                     referrer: req.headers.referer || "",
                     country: ipInfo.country || "Unknown",
