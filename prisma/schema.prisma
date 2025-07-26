@@ -45,7 +45,7 @@ model Link {
   clickLimit Int?
   clickCount Int      @default(0)
   password  String?
-  qrCodeUrl String?
+  qrCode String?
   linkClicks linkClick[]
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

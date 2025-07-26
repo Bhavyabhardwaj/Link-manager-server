@@ -2,6 +2,7 @@ import { linkValidation } from "../validation";
 import prisma from "../config/db";
 import { slugUtil } from "../utils";
 import { BadRequestError } from "../errors";
+import { QRCodeGenerator } from '../utils/qrCode';
 
 // Service functions for link business logic and database operations
 // Creates a new link for a user
@@ -15,16 +16,27 @@ export const createLink = async ({ title, url, description, slug: requestedSlug 
             throw new BadRequestError("Slug already exists");
         }
     }
+    const shortUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/${slug}`;
+    
+    // Generate QR code for the short URL
+    const qrCode = await QRCodeGenerator.generateForLink(shortUrl);
+    
     const newLink = await prisma.link.create({
         data: {
             title,
             url,
             description,
             userId,
-            slug
+            slug,
+            active: true,
+            qrCode, // Store QR code as base64
         }
     })
-    return newLink;
+    return {
+        ...newLink,
+        shortUrl,
+        qrCode
+    };
 }
 
 // Fetches all active links for a user, ordered by creation date
@@ -133,3 +145,22 @@ export const generateQrCode = async (linkId: string, userId: string) => {
 
     return updatedLink;
 }
+
+// Add to link creation
+export const generateQRCode = async (url: string): Promise<string> => {
+  const qr = require('qrcode');
+  return await qr.toDataURL(url);
+};
+
+export const regenerateQRCode = async (linkId: string, options?: any) => {
+    const link = await prisma.link.findUnique({ where: { id: linkId } });
+    if (!link) throw new Error('Link not found');
+    
+    const shortUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/${link.slug}`;
+    const qrCode = await QRCodeGenerator.generateForLink(shortUrl, options);
+    
+    return await prisma.link.update({
+        where: { id: linkId },
+        data: { qrCode }
+    });
+};

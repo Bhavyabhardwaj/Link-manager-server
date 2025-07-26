@@ -2,6 +2,7 @@ import { NotFoundError } from "../errors";
 import { linkService } from "../services";
 import { Response, Request, NextFunction } from "express";
 import { slugUtil } from "../utils";
+import { QRCodeGenerator } from '../utils/qrCode';
 
 // Controller functions for handling link-related API requests
 
@@ -122,17 +123,48 @@ export const reorderLinks = async(req: Request, res: Response, next: NextFunctio
     }
 }
 
-export const generateQrCode = async(req: Request, res: Response, next: NextFunction) => {
+export const getQRCode = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const linkId = req.params.id;
-        const userId = (req as any).user.id;
-        const qrCodeUrl = await linkService.generateQrCode(linkId, userId);
-        res.status(200).json({
-            status: "success",
-            message: "QR code generated successfully",
-            data: { qrCodeUrl },
+        const { id } = req.params;
+        const { format = 'png', size = 200 } = req.query;
+        
+        const link = await linkService.getLinkById(id);
+        if (!link) return res.status(404).json({ error: 'Link not found' });
+        
+        const shortUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/${link.slug}`;
+        
+        if (format === 'svg') {
+            const svgQR = await QRCodeGenerator.generateQRCode(shortUrl, { 
+                format: 'svg',
+                size: Number(size)
+            });
+            res.setHeader('Content-Type', 'image/svg+xml');
+            return res.send(svgQR);
+        }
+        
+        // Return base64 image
+        const qrCode = await QRCodeGenerator.generateQRCode(shortUrl, { 
+            size: Number(size)
         });
-    } catch (error: any) {
+        res.json({ qrCode, shortUrl });
+        
+    } catch (error) {
         next(error);
     }
-}
+};
+
+export const regenerateQRCode = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const options = req.body;
+        
+        const updatedLink = await linkService.regenerateQRCode(id, options);
+        res.json({ 
+            message: 'QR code regenerated successfully',
+            qrCode: updatedLink.qrCode 
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+};
