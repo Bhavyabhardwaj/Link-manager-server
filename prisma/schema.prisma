@@ -17,57 +17,85 @@ datasource db {
 model User {
   id                   String      @id @default(cuid())
   email                String      @unique
-  password             String
   username             String      @unique
+  password             String
+  name                 String?
   bio                  String?
   image                String?
-  githubId             String?     @unique @map("github_id")
-  googleId             String?     @unique @map("google_id")
+
+  // Bio page
+  isPublic           Boolean     @default(true)
+  theme               String      @default("light")
+
+  // auth token
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  githubId             String?     @unique @map("github_id")
+  googleId             String?     @unique @map("google_id")
+
+  // Relations
   links                Link[]
   linkClicks           linkClick[]
-  name                 String?
+
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
+  @@index([username])
+  @@index([isPublic])
 }
 
 model Link {
   id          String      @id @default(cuid())
   url         String
   title       String
-  slug        String      @unique
+  slug        String?      @unique
   description String?
+  type        LinkType     @default(BIO)
   active      Boolean     @default(true)
-  order       Int         @default(0)
-  userId      String
+
+  // order of links in bio
+  order       Int?        @default(0)
+  icon        String?
+
+  // short link
+  customSlug Boolean @default(false)
   expiresAt   DateTime?
   clickLimit  Int?
-  clickCount  Int         @default(0)
   password    String?
+
+  clickCount  Int         @default(0)
   qrCode      String?
-  linkClicks  linkClick[]
+  
+  // Relations
+  userId      String
   user        User        @relation(fields: [userId], references: [id])
+  linkClicks  linkClick[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([userId])
+  @@index([slug])
   @@index([expiresAt])
+  @@index([userId, order])
 }
 
 model linkClick {
   id        String   @id @default(cuid())
   linkId    String
   userId    String?
+
+  // visitor tracking
   ipAddress String?
   userAgent String?
   referrer  String?
   country   String?
   city      String?
   agent     String?
+
+  // device information
   device    String?
   os        String?
   browser   String?
+
   clickDate DateTime @default(dbgenerated("CURRENT_DATE"))
 
   link      Link     @relation(fields: [linkId], references: [id])
@@ -76,5 +104,12 @@ model linkClick {
 
   @@index([linkId])
   @@index([userId])
+  @@index([country])
+  @@index([device])
   @@index([clickDate])
+}
+
+enum LinkType {
+  BIO
+  SHORT
 }
